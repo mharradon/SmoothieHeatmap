@@ -74,6 +74,13 @@
  * v1.27: Fix bug introduced in v1.26 for non whole number devicePixelRatio values, by @zmbush
  * v1.28: Add 'minValueScale' option, by @megawac
  *        Fix 'labelPos' for different size of 'minValueString' 'maxValueString', by @henryn
+ *
+ *^^smoothie.js history
+ *
+ * smoothie_heatmap.js - 2/28/2017
+ * Written by Michael Harradon
+ *
+ * v1.0: Replaced line draw calls with heatmap drawing - smoothie_heatmap.js
  */
 
 ;(function(exports) {
