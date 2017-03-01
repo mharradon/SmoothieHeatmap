@@ -618,6 +618,42 @@
     context.fillRect(0, 0, dimensions.width, dimensions.height);
     context.restore();
 
+    // Draw histogram
+    var timeSeries = this.seriesSet[0].timeSeries,
+        dataSet = timeSeries.data,
+        seriesOptions = this.seriesSet[0].options;
+
+    // Delete old data that's moved off the left of the chart.
+    timeSeries.dropOldData(oldestValidTime, chartOptions.maxDataSetLength);
+    
+    // Shift canvas down
+    bufContext.drawImage(this.bufCanvas,-shiftDist,0);
+  
+    // Retain lastX for calculating box size
+    var blockHeight = dimensions.height/dataSet[0][1].length;
+    var getYFromJ = function(j){return dimensions.height-Math.round(blockHeight*(j+1));};
+
+    var firstX = 0, lastX = 0, lastY = 0;
+    for (var i = 0; i < dataSet.length && dataSet.length !== 1; i++) {
+      var x = timeToXPixel(dataSet[i][0]);
+      for (var j = 0; j < dataSet[i][1].length; j++){
+        var y = getYFromJ(j)
+         
+        if (i != 0) {
+          if(lastX<=dimensions.width && x>=dimensions.width){
+            bufContext.fillStyle = "rgb(" + String(Math.floor(255*dataSet[i][1][j][0])) + ","
+                                          + String(Math.floor(255*dataSet[i][1][j][1])) + ","
+                                          + String(Math.floor(255*dataSet[i][1][j][2])) + ")";
+            
+            bufContext.fillRect(lastX,y,dimensions.width-lastX+1,getYFromJ(j-1)-y);
+          }
+        }
+      }
+      lastX = x;
+    }
+    //bufContext.clip();
+    context.drawImage(this.bufCanvas,0,0);
+ 
     // Grid lines...
     context.save();
     context.lineWidth = chartOptions.grid.lineWidth;
@@ -674,42 +710,6 @@
       }
     }
    
-    // Draw histogram
-    var timeSeries = this.seriesSet[0].timeSeries,
-        dataSet = timeSeries.data,
-        seriesOptions = this.seriesSet[0].options;
-
-    // Delete old data that's moved off the left of the chart.
-    timeSeries.dropOldData(oldestValidTime, chartOptions.maxDataSetLength);
-    
-    // Shift canvas down
-    bufContext.drawImage(this.bufCanvas,-shiftDist,0);
-    
-    // Retain lastX for calculating box size
-    var blockHeight = dimensions.height/dataSet[0][1].length;
-    var getYFromJ = function(j){return dimensions.height-Math.round(blockHeight*(j+1));};
-
-    var firstX = 0, lastX = 0, lastY = 0;
-    for (var i = 0; i < dataSet.length && dataSet.length !== 1; i++) {
-      var x = timeToXPixel(dataSet[i][0]);
-      for (var j = 0; j < dataSet[i][1].length; j++){
-        var y = getYFromJ(j)
-         
-        if (i != 0) {
-          if(lastX<=dimensions.width && x>=dimensions.width){
-            bufContext.fillStyle = "rgb(" + String(Math.floor(255*dataSet[i][1][j][0])) + ","
-                                          + String(Math.floor(255*dataSet[i][1][j][1])) + ","
-                                          + String(Math.floor(255*dataSet[i][1][j][2])) + ")";
-            
-            bufContext.fillRect(lastX,y,dimensions.width-lastX+1,getYFromJ(j-1)-y);
-          }
-        }
-      }
-      lastX = x;
-    }
-    //bufContext.clip();
-    context.drawImage(this.bufCanvas,0,0);
- 
     // Draw the axis values on the chart.
     if (!chartOptions.labels.disabled && !isNaN(this.valueRange.min) && !isNaN(this.valueRange.max)) {
       var maxValueString = chartOptions.yMaxFormatter(this.valueRange.max, chartOptions.labels.precision),

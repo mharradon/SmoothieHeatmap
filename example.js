@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function(event){
   chartDOM.height = chartDOM.offsetHeight;
 
   graph = new SmoothieHeatmap({
-                  grid: { strokeStyle:'rgb(230, 230, 230)', fillStyle:'rgb(20, 20, 20)',
+                  grid: { strokeStyle:'rgba(255, 255, 255, 0.3)', fillStyle:'rgb(0, 0, 0)',
                           lineWidth: 1, millisPerLine: 250, verticalSections: 10, },
                   labels: { fillStyle:'rgb(255, 255, 255)' },
                   millisPerPixel: 10
